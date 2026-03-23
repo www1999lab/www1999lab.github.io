@@ -1,0 +1,8 @@
+body{font-family:Arial;margin:0;padding:20px;background:#f6f6f6}
+header{text-align:center;padding:40px 20px;background:#000;color:#fff}
+.product-list{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:40px 0}
+.product{background:white;padding:20px;border-radius:10px;box-shadow:0 2px 5px #00000015}
+.contact-form {max-width: 500px;margin: 40px auto;padding: 20px;background: #fff;border-radius: 10px;}
+input, textarea {width: 100%;padding: 10px;margin: 5px 0;border: 1px solid #ddd;}
+button {background: #000;color: #fff;padding: 10px 20px;border: none;cursor: pointer;}
+footer{text-align:center;padding:20px;color:#666}

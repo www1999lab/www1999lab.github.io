@@ -30,6 +30,10 @@
             color: #64ffda;
             text-decoration: none;
         }
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
         .nav-links a {
             margin-left: 28px;
             text-decoration: none;
@@ -38,6 +42,16 @@
         }
         .nav-links a:hover {
             color: #64ffda;
+        }
+
+        /* 语言区域样式 */
+        .language-switch {
+            display: flex;
+            align-items: center;
+            margin-right: 12px;
+            color: #ccd6f6;
+            font-size: 14px;
+            gap: 6px;
         }
 
         /* 导航下方联系方式栏 */
@@ -299,6 +313,27 @@
             color: #8892b0;
             line-height: 1.8;
         }
+
+        /* 语言选择框样式 */
+        #google_translate_element {
+            display: inline-block;
+        }
+        .goog-te-combo {
+            background: #112240;
+            color: #ccd6f6;
+            border: 1px solid #233554;
+            padding: 6px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            outline: none;
+        }
+        .goog-te-combo:hover {
+            border-color: #64ffda;
+        }
+        /* 隐藏谷歌自带文字 */
+        .goog-te-gadget span {
+            display: none !important;
+        }
     </style>
 </head>
 
@@ -308,6 +343,11 @@
 <div class="nav">
     <a href="#" class="logo">Jelintech</a>
     <div class="nav-links">
+        <!-- 这里就是你要的：文字 + 语言框，放在 Home 前面 -->
+        <div class="language-switch">
+            <span>Select language</span>
+            <div id="google_translate_element"></div>
+        </div>
         <a href="#home">Home</a>
         <a href="#products">Our Products</a>
         <a href="#brands">Brands</a>
@@ -464,6 +504,18 @@
     <p>© 2026 Jelintech. All Rights Reserved.</p>
     <p>816, East Tower, City Tiandi Plaza, 40555 Jiabin Rd, Luohu, Shenzhen, China</p>
 </div>
+
+<!-- 谷歌多语言翻译插件 -->
+<script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'en',
+    includedLanguages: 'en,es,pt,de,fr,ru,ar,ja,ko,sw,yo,ha,am',
+    layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+  }, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 </body>
 </html>

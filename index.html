@@ -1,45 +1,469 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>JelinTech - Electronic Products</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jelintech - Global Electronic Components Distributor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        /* 导航 */
+        .nav {
+            background: #0a192f;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #11294b;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #64ffda;
+            text-decoration: none;
+        }
+        .nav-links a {
+            margin-left: 28px;
+            text-decoration: none;
+            color: #ccd6f6;
+            font-weight: 500;
+        }
+        .nav-links a:hover {
+            color: #64ffda;
+        }
+
+        /* 导航下方联系方式栏 */
+        .nav-contact {
+            background: #112240;
+            padding: 10px 5%;
+            text-align: right;
+            font-size: 15px;
+            color: #ccd6f6;
+        }
+        .nav-contact span {
+            margin-left: 20px;
+        }
+
+        /* 首页大图背景 */
+        .hero {
+            width: 100%;
+            height: 600px;
+            background-image: url('hellorf_hi2240914651.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            padding: 0 20px;
+        }
+        .hero h1 {
+            font-size: 46px;
+            margin-bottom: 20px;
+        }
+        .hero p {
+            font-size: 20px;
+            line-height: 1.6;
+        }
+
+        /* 产品分类 */
+        .products {
+            padding: 80px 5%;
+            background: #0a192f;
+            text-align: center;
+        }
+        .products h2 {
+            font-size: 34px;
+            margin-bottom: 50px;
+            color: #ccd6f6;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .product-item {
+            background: #112240;
+            padding: 35px 25px;
+            border-radius: 8px;
+            border: 1px solid #233554;
+            transition: 0.3s;
+        }
+        .product-item:hover {
+            transform: translateY(-5px);
+            border-color: #64ffda;
+        }
+        .product-item h3 {
+            color: #64ffda;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .product-item p {
+            font-size: 15px;
+            color: #a8b2d3;
+            line-height: 1.5;
+        }
+
+        /* 品牌区域 */
+        .brands {
+            padding: 70px 5%;
+            text-align: center;
+            background: #0a192f;
+        }
+        .brands h2 {
+            font-size: 30px;
+            margin-bottom: 40px;
+            color: #64ffda;
+        }
+        .brand-container {
+            max-width: 700px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+        }
+        .brand {
+            padding: 18px 10px;
+            background: #112240;
+            border-radius: 6px;
+            font-weight: bold;
+            color: #ccd6f6;
+            border: 1px solid #233554;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* 业务场景图片 */
+        .gallery {
+            padding: 80px 5%;
+            background: #0a192f;
+            text-align: center;
+        }
+        .gallery h2 {
+            font-size: 34px;
+            margin-bottom: 50px;
+            color: #ccd6f6;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        /* 优势 */
+        .features {
+            padding: 80px 5%;
+            background: #0a192f;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 34px;
+            margin-bottom: 50px;
+            color: #ccd6f6;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .feature-box {
+            padding: 35px 30px;
+            border-radius: 8px;
+            background: #112240;
+            border: 1px solid #233554;
+            transition: 0.3s;
+        }
+        .feature-box:hover {
+            transform: translateY(-5px);
+            border-color: #64ffda;
+        }
+        .feature-box h3 {
+            color: #64ffda;
+            margin-bottom: 12px;
+            font-size: 20px;
+        }
+        .feature-box p {
+            color: #a8b2d3;
+            line-height: 1.6;
+        }
+
+        /* 联系表单 */
+        .contact {
+            padding: 70px 5%;
+            background: #112240;
+            color: #ccd6f6;
+        }
+        .contact h2 {
+            font-size: 30px;
+            margin-bottom: 40px;
+            text-align: center;
+            color: #fff;
+        }
+        .contact-form {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        .form-group {
+            flex: 1;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 16px;
+            border-radius: 6px;
+            border: none;
+            outline: none;
+            font-size: 15px;
+            background: #233554;
+            color: #ccd6f6;
+        }
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #8892b0;
+        }
+        .form-group textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+        .submit-btn {
+            padding: 16px;
+            background: #64ffda;
+            color: #0a192f;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+        .contact-info {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 16px;
+            line-height: 1.9;
+        }
+
+        /* 底部 */
+        .footer {
+            padding: 50px 5%;
+            text-align: center;
+            background: #0a192f;
+            border-top: 1px solid #233554;
+            color: #8892b0;
+            line-height: 1.8;
+        }
+    </style>
 </head>
+
 <body>
-<header>
-<h1>JelinTech</h1>
-<p>Professional Electronic Products</p>
-</header>
-<main>
-<h2>Our Products</h2>
-<div class="product-list">
-<div class="product">
-<h3>Wireless Earbuds</h3>
-<p>High quality sound, long battery life</p>
-</div>
-<div class="product">
-<h3>Smart Watch</h3>
-<p>Health monitor & fitness tracker</p>
-</div>
-<div class="product">
-<h3>Phone Charger</h3>
-<p>Fast charging, safe & durable</p>
-</div>
+
+<!-- 导航 -->
+<div class="nav">
+    <a href="#" class="logo">Jelintech</a>
+    <div class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#products">Our Products</a>
+        <a href="#brands">Brands</a>
+        <a href="#gallery">Business</a>
+        <a href="#why">Why Us</a>
+        <a href="#contact">Contact</a>
+    </div>
 </div>
 
-<!-- 留言表单 -->
-<div class="contact-form">
-  <h2>Contact Us / 联系我们</h2>
-  <form action="https://formspree.io/f/你的Formspree代码" method="POST">
-    <input type="text" name="name" placeholder="Your Name" required><br>
-    <input type="email" name="email" placeholder="Your Email" required><br>
-    <textarea name="message" placeholder="Your Message" required></textarea><br>
-    <button type="submit">Send Message</button>
-  </form>
+<!-- 导航下方联系方式栏 -->
+<div class="nav-contact">
+    <span>Phone: +86 13088295136</span>
+    <span>Email: 13088295136@163.com</span>
 </div>
-</main>
-<footer>
-<p>Contact: sales@jelintech.com</p>
-</footer>
+
+<!-- 首页大图背景 -->
+<div class="hero" id="home">
+    <div class="hero-content">
+        <h1>Global Independent Distributor of IC & Electronic Components</h1>
+        <p>Shenzhen based professional supplier for IC, Storage, FPGA, MCU, Diodes, Capacitors, Resistors and Connectors.</p>
+    </div>
+</div>
+
+<!-- 真正的产品分类（第二屏） -->
+<div class="products" id="products">
+    <h2>Our Products</h2>
+    <div class="product-grid">
+        <div class="product-item">
+            <h3>IC Chips</h3>
+            <p>Integrated Circuits, Logic ICs, Analog ICs</p>
+        </div>
+        <div class="product-item">
+            <h3>Storage Components</h3>
+            <p>DRAM, NAND, Flash, eMMC, SSD Modules</p>
+        </div>
+        <div class="product-item">
+            <h3>FPGA & MCU</h3>
+            <p>Field Programmable Gate Array, Microcontroller Units</p>
+        </div>
+        <div class="product-item">
+            <h3>Power IC</h3>
+            <p>Power Management, Drivers, Voltage Regulators</p>
+        </div>
+        <div class="product-item">
+            <h3>Passive Components</h3>
+            <p>Capacitors, Resistors, Diodes, Transistors</p>
+        </div>
+        <div class="product-item">
+            <h3>Connectors</h3>
+            <p>Board to Board, Wire to Board, I/O Connectors</p>
+        </div>
+    </div>
+</div>
+
+<!-- 品牌（优化整齐） -->
+<div class="brands" id="brands">
+    <h2>Authorized & Trusted Brands</h2>
+    <div class="brand-container">
+        <div class="brand">ADI</div>
+        <div class="brand">TI</div>
+        <div class="brand">AMD</div>
+        <div class="brand">Intel</div>
+        <div class="brand">NVIDIA</div>
+        <div class="brand">Samsung</div>
+        <div class="brand">Infineon</div>
+        <div class="brand">ST</div>
+        <div class="brand">NXP</div>
+        <div class="brand">ON</div>
+    </div>
+</div>
+
+<!-- 业务场景图片 -->
+<div class="gallery" id="gallery">
+    <h2>Our Business & Facilities</h2>
+    <div class="gallery-grid">
+        <div class="gallery-item">
+            <img src="hellorf_hi2237393352.jpg" alt="Business">
+        </div>
+        <div class="gallery-item">
+            <img src="1393815866_huge.jpg" alt="Production">
+        </div>
+        <div class="gallery-item">
+            <img src="1070012039_huge.jpg" alt="Warehouse">
+        </div>
+        <div class="gallery-item">
+            <img src="2029368575_huge.jpg" alt="Technology">
+        </div>
+        <div class="gallery-item">
+            <img src="457782904_huge.jpg" alt="Team">
+        </div>
+        <div class="gallery-item">
+            <img src="hellorf_hi2241188654.jpg" alt="Chip">
+        </div>
+    </div>
+</div>
+
+<!-- 优势 -->
+<div class="features" id="why">
+    <h2 class="section-title">Why Choose Jelintech</h2>
+    <div class="features-grid">
+        <div class="feature-box">
+            <h3>Full Product Range</h3>
+            <p>3,000,000+ line items including ICs, storage, FPGAs, MCUs, passives and connectors.</p>
+        </div>
+        <div class="feature-box">
+            <h3>Obsolete & Hard-to-Find Parts</h3>
+            <p>Professional sourcing for allocated, end-of-life, and difficult-to-find components worldwide.</p>
+        </div>
+        <div class="feature-box">
+            <h3>100% Authentic Components</h3>
+            <p>All products are 100% genuine with strict quality control and full traceability.</p>
+        </div>
+        <div class="feature-box">
+            <h3>Fast & Global Shipping</h3>
+            <p>48-hour dispatch from Shenzhen warehouse. Worldwide delivery for all customers.</p>
+        </div>
+        <div class="feature-box">
+            <h3>350+ Manufacturers</h3>
+            <p>Stable supply chain with top global brands for industrial, automotive and medical applications.</p>
+        </div>
+        <div class="feature-box">
+            <h3>Allocated Parts Sourcing</h3>
+            <p>Strong ability to secure shortage parts and support long-term project demand.</p>
+        </div>
+    </div>
+</div>
+
+<!-- 联系我们 + 表单 -->
+<div class="contact" id="contact">
+    <h2>Contact Us</h2>
+    <form class="contact-form" action="https://mailthis.to/13088295136@qq.com" method="POST">
+        <div class="form-row">
+            <div class="form-group">
+                <input type="text" name="姓名" placeholder="Your Full Name" required>
+            </div>
+            <div class="form-group">
+                <input type="text" name="电话/邮箱" placeholder="Phone / Email" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <textarea name="留言" placeholder="Your Message / Inquiry" required></textarea>
+        </div>
+        <button type="submit" class="submit-btn">Submit Inquiry</button>
+    </form>
+    <div class="contact-info">
+        <p>Phone: +86 13088295136</p>
+        <p>Email: 13088295136@163.com</p>
+        <p>Location: 816, East Tower, City Tiandi Plaza, 40555 Jiabin Rd, Luohu, Shenzhen, China</p>
+    </div>
+</div>
+
+<!-- 底部 -->
+<div class="footer">
+    <p>© 2026 Jelintech. All Rights Reserved.</p>
+    <p>816, East Tower, City Tiandi Plaza, 40555 Jiabin Rd, Luohu, Shenzhen, China</p>
+</div>
+
 </body>
 </html>

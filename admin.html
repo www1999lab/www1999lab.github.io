@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dictation Admin</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --primary: #111827;
+      --ok: #047857;
+      --danger: #b91c1c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.04);
+    }
+    h1, h2 { margin-top: 0; }
+    .muted { color: var(--muted); }
+    label { display: block; font-weight: 700; margin: 12px 0 6px; }
+    input, textarea, button {
+      font: inherit;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    input[type="file"], input[type="text"], textarea {
+      width: 100%;
+      padding: 12px;
+      background: #fff;
+    }
+    button {
+      padding: 10px 14px;
+      cursor: pointer;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      margin: 4px 4px 4px 0;
+    }
+    button.secondary {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    button.ok { background: var(--ok); }
+    button.danger { background: var(--danger); }
+    audio { width: 100%; margin-top: 8px; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .sentence {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin: 10px 0;
+      background: #fff;
+    }
+    .sentence.active {
+      border-color: #111827;
+      box-shadow: 0 0 0 2px rgba(17,24,39,.08);
+    }
+    .sentence textarea {
+      min-height: 72px;
+      resize: vertical;
+    }
+    .time {
+      font-family: monospace;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+    .exportBox {
+      min-height: 240px;
+      font-family: monospace;
+      white-space: pre;
+    }
+    @media (max-width: 760px) {
+      .wrap { padding: 14px; }
+      .grid { grid-template-columns: 1fr; }
+      button { width: 100%; margin-top: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>私人英语听写系统｜管理页</h1>
+      <p class="muted">
+        这个页面用于制作听写材料：上传 txt 文稿和 mp3 音频，自动切句，然后手动标记每句开始/结束时间，最后导出 dictation-data.js。
+      </p>
+      <p class="muted">
+        注意：GitHub Pages 不能把你上传的文件永久保存到服务器。这里是本地生成数据，你需要下载导出的文件，再上传到 GitHub。
+      </p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>1. 上传文稿</h2>
+        <label>上传 .txt 英文文稿</label>
+        <input type="file" id="txtFile" accept=".txt,text/plain" />
+
+        <label>或者直接粘贴英文文稿</label>
+        <textarea id="rawText" rows="10" placeholder="Paste your English transcript here..."></textarea>
+
+        <button onclick="splitText()">自动按句子切分</button>
+        <button class="secondary" onclick="clearAll()">清空</button>
+      </div>
+
+      <div class="card">
+        <h2>2. 上传音频</h2>
+        <label>上传 .mp3 音频</label>
+        <input type="file" id="audioFile" accept="audio/*" />
+
+        <label>最终上传到 GitHub 后的音频路径</label>
+        <input type="text" id="audioPath" value="audio/lesson1.mp3" />
+
+        <audio id="mainAudio" controls></audio>
+        <p class="muted">提示：上传音频后，播放到一句的开头，点“设为开始”；播放到句尾，点“设为结束”。</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>3. 句子与时间轴</h2>
+      <p id="countInfo" class="muted">还没有句子。</p>
+      <div id="sentences"></div>
+    </div>
+
+    <div class="card">
+      <h2>4. 导出数据</h2>
+      <button class="ok" onclick="generateJS()">生成 dictation-data.js</button>
+      <button class="secondary" onclick="generateJSON()">生成 JSON</button>
+      <button onclick="downloadExport()">下载当前导出内容</button>
+      <textarea id="exportBox" class="exportBox" placeholder="Export result will appear here..."></textarea>
+    </div>
+  </div>
+
+<script>
+  let sentences = [];
+  let activeIndex = 0;
+  let currentExportType = "js";
+
+  const txtFile = document.getElementById("txtFile");
+  const audioFile = document.getElementById("audioFile");
+  const rawText = document.getElementById("rawText");
+  const mainAudio = document.getElementById("mainAudio");
+
+  txtFile.addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const text = await file.text();
+    rawText.value = text;
+  });
+
+  audioFile.addEventListener("change", (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    mainAudio.src = URL.createObjectURL(file);
+
+    const safeName = file.name.replace(/\s+/g, "-");
+    document.getElementById("audioPath").value = "audio/" + safeName;
+  });
+
+  function splitText() {
+    const text = rawText.value.trim();
+    if (!text) {
+      alert("请先上传或粘贴英文文稿。");
+      return;
+    }
+
+    const parts = text
+      .replace(/\r/g, " ")
+      .replace(/\n+/g, " ")
+      .replace(/\s+/g, " ")
+      .match(/[^.!?]+[.!?]+["')\]]?|[^.!?]+$/g) || [];
+
+    sentences = parts
+      .map(s => s.trim())
+      .filter(Boolean)
+      .map(s => ({
+        text: s,
+        start: null,
+        end: null
+      }));
+
+    activeIndex = 0;
+    renderSentences();
+  }
+
+  function renderSentences() {
+    const box = document.getElementById("sentences");
+    const countInfo = document.getElementById("countInfo");
+    box.innerHTML = "";
+    countInfo.innerText = sentences.length ? `共 ${sentences.length} 句。` : "还没有句子。";
+
+    sentences.forEach((item, index) => {
+      const div = document.createElement("div");
+      div.className = "sentence" + (index === activeIndex ? " active" : "");
+      div.innerHTML = `
+        <strong>Sentence ${index + 1}</strong>
+        <textarea onchange="updateText(${index}, this.value)">${escapeHTML(item.text)}</textarea>
+        <div class="time">start: ${formatTime(item.start)} | end: ${formatTime(item.end)}</div>
+        <button onclick="setActive(${index})">选中这一句</button>
+        <button class="ok" onclick="setStart(${index})">设为开始时间</button>
+        <button class="danger" onclick="setEnd(${index})">设为结束时间</button>
+        <button class="secondary" onclick="playSegment(${index})">试听本句</button>
+      `;
+      box.appendChild(div);
+    });
+  }
+
+  function updateText(index, value) {
+    sentences[index].text = value.trim();
+  }
+
+  function setActive(index) {
+    activeIndex = index;
+    renderSentences();
+  }
+
+  function setStart(index) {
+    sentences[index].start = roundTime(mainAudio.currentTime);
+    activeIndex = index;
+    renderSentences();
+  }
+
+  function setEnd(index) {
+    sentences[index].end = roundTime(mainAudio.currentTime);
+    activeIndex = index;
+    renderSentences();
+  }
+
+  function playSegment(index) {
+    const item = sentences[index];
+    if (item.start === null || item.end === null) {
+      alert("这一句还没有设置开始和结束时间。");
+      return;
+    }
+    mainAudio.currentTime = item.start;
+    mainAudio.play();
+
+    const stop = () => {
+      if (mainAudio.currentTime >= item.end) {
+        mainAudio.pause();
+        mainAudio.removeEventListener("timeupdate", stop);
+      }
+    };
+    mainAudio.addEventListener("timeupdate", stop);
+  }
+
+  function generateItems() {
+    const audioPath = document.getElementById("audioPath").value.trim() || "audio/lesson1.mp3";
+
+    return sentences.map(item => ({
+      text: item.text,
+      audio: audioPath,
+      start: item.start ?? 0,
+      end: item.end ?? 0
+    }));
+  }
+
+  function generateJS() {
+    currentExportType = "js";
+    const data = generateItems();
+    document.getElementById("exportBox").value =
+      "const dictationData = " + JSON.stringify(data, null, 2) + ";";
+  }
+
+  function generateJSON() {
+    currentExportType = "json";
+    const data = generateItems();
+    document.getElementById("exportBox").value = JSON.stringify(data, null, 2);
+  }
+
+  function downloadExport() {
+    const content = document.getElementById("exportBox").value;
+    if (!content.trim()) {
+      alert("请先生成导出内容。");
+      return;
+    }
+
+    const filename = currentExportType === "json" ? "dictation-data.json" : "dictation-data.js";
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function clearAll() {
+    if (!confirm("确定清空当前内容吗？")) return;
+    rawText.value = "";
+    sentences = [];
+    document.getElementById("exportBox").value = "";
+    renderSentences();
+  }
+
+  function roundTime(num) {
+    return Math.round(num * 100) / 100;
+  }
+
+  function formatTime(num) {
+    return num === null || num === undefined ? "--" : `${num}s`;
+  }
+
+  function escapeHTML(str) {
+    return str.replace(/[&<>"']/g, m => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    }[m]));
+  }
+
+  renderSentences();
+</script>
+</body>
+</html>
